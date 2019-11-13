@@ -6,6 +6,7 @@ Web scraper to get a webpage details.
 To run Nodejs Backend use the following commands:
 
 ``` shell
+$ cd < path to folder contain project >
 $ npm install
 $ npm run server
 ```
