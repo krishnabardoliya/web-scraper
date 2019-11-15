@@ -4,6 +4,9 @@ var request = require("request");
 var cheerio = require("cheerio");
 var bodyParser = require("body-parser");
 var app = express();
+const cors = require('cors');
+
+app.use(cors()) 
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -20,7 +23,7 @@ app.post("/scrape", function(req, res) {
         if (!error) {
           console.log("response =>", response);
           var $ = cheerio.load(html);
-
+          
           console.log("h1 =>", $("h1").length);
           console.log("h2 =>", $("h2").length);
           console.log("h3 =>", $("h3").length);
@@ -47,15 +50,21 @@ app.post("/scrape", function(req, res) {
 
           title = $("title").text();
 
+          var html = cheerio.parseHTML(html)
+          // if(html) {
+          //   json.html = html;
+          // }
           var links = [];
           var externalLinks = [];
           var internalinks = [];
           $("a").each((index, value) => {
             var link = $(value).attr("href");
+            console.log("link", link)
             if (
-              link.includes(response.request.uri.hostname) ||
+              link &&
+              (link.includes(response.request.uri.hostname) ||
               link.startsWith("#") ||
-              link.startsWith("/")
+              link.startsWith("/"))
             ) {
               internalinks.push({ link: link });
             } else {
@@ -78,15 +87,13 @@ app.post("/scrape", function(req, res) {
 
         } else {
           console.log("error => ", error);
-          res.status(500).send(error);
+          let message = "Something went wrong!";
+          if(error['code'] === 'ECONNREFUSED' || error['code'] === 'ENOTFOUND') {
+            message = "URL is not reachable"
+          }
+          console.log("here")
+          res.status(500).send({...error, message});
         }
-
-        // fs.writeFile("output.json", JSON.stringify(json, null, 4), function(err) {
-        //   console.log("err =>", err);
-        //   console.log(
-        //     "File successfully written! - Check your project directory for the output.json file"
-        //   );
-        // });
 
         console.log(json);
         res.send(json);
@@ -95,7 +102,7 @@ app.post("/scrape", function(req, res) {
       res.status(500).send({ message: "URL missing" });
     }
   } catch (error) {
-    console.log(error);
+    console.log("err 12=>",error);
     res.status(500).send({ message: "Something went wrong" });
   }
 });

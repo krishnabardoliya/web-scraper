@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { getAnalysedData } from '../service/apiCall';
 
 const regExp = RegExp(
   /^(https?|ftp):\/\/([a-zA-Z0-9.-]+(:[a-zA-Z0-9.&%$-]+)*@)*((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(:[0-9]+)*(\/($|[a-zA-Z0-9.,?'\\+&%$#=~_-]+))*$/
@@ -28,8 +31,31 @@ export default class UserForm extends Component {
         url: ""
       },
       fields: ["url"],
-      loading: false
+      loading: false,
+      analysedData: null
     };
+  }
+
+  toastError = (msg) => {
+    toast.error(msg, {
+      position: "top-right",
+      autoClose: 3500,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true
+      });
+  }
+
+  toastSuccess = (msg) => {
+    toast.success(msg, {
+      position: "top-right",
+      autoClose: 3500,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true
+      });
   }
 
   checkValidation = () => {
@@ -61,23 +87,44 @@ export default class UserForm extends Component {
   };
 
   onSubmit = async e => {
+    const that = this
     e.preventDefault();
     await this.checkValidation();
     if (await formValid(this.state)) {
       // check if any value is blank or invalid
-      this.setState({loading: true}, () => {
+      this.setState({loading: true});
+      getAnalysedData(this.state.url)
+      .then(function (response) {
+        console.log("response",response);
+        if(response) {
+          that.setState({loading: false});
+          that.toastSuccess("Analysed URL successfully");
+          that.setState({analysedData: JSON.stringify(response)})
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+        if(error && error.response && error.response.data && error.response.data.message){
+          that.toastError(error.response.data.message)
+        } else {
+          that.toastError("Something went wrong")
+        }
+        that.setState({loading: false});
       });
     } else {
-      alert("Form is invalid!");
+      // alert("Form is invalid!");
+      this.toastError("Form is invalid!")
+      this.setState({loading: false});
+      
     }
   };
 
   componentDidUpdate() {
-      if(this.state.loading === true) {
-        setTimeout(() => {
-            this.setState({loading: false});
-          }, 2000);
-      }
+      // if(this.state.loading === true) {
+      //   setTimeout(() => {
+      //       this.setState({loading: false});
+      //     }, 2000);
+      // }
   }
 
   formValChange = e => {
@@ -104,6 +151,7 @@ export default class UserForm extends Component {
     const { isError } = this.state;
 
     return (
+      <>
       <form onSubmit={this.onSubmit} noValidate>
         <div className="form-group">
           <label>Enter URL</label>
@@ -134,7 +182,21 @@ export default class UserForm extends Component {
             Analyse
           </>}
         </button>
+        {}
       </form>
+      <ToastContainer
+      position="top-right"
+      autoClose={3500}
+      hideProgressBar
+      newestOnTop
+      closeOnClick
+      rtl={false}
+      pauseOnVisibilityChange
+      draggable
+      pauseOnHover
+      />
+      {this.state.analysedData && <> {this.state.analysedData} </>}      
+      </>
     );
   }
 }
