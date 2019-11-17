@@ -16,7 +16,8 @@
     "cheerio": "latest",
     "cors": "^2.8.5",
     "express": "latest",
-    "request": "latest"
+    "request": "latest",
+    "url": "^0.11.0"
   },
   "devDependencies": {
     "nodemon": "^1.19.4"
