@@ -5,7 +5,6 @@ var cheerio = require("cheerio");
 var bodyParser = require("body-parser");
 var app = express();
 const cors = require("cors");
-var urlPackage = require("url");
 
 app.use(cors());
 
