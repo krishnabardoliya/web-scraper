@@ -125,6 +125,7 @@ app.post("/scrape", function(req, res) {
           json.responseTime = responseTime;
 
           json.title = title;
+          json.maxImage = maxImage;
           json.numberOfHeadings = numberOfHeadings;
 
           json.html = html;

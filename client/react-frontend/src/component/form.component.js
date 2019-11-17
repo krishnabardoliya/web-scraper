@@ -229,14 +229,14 @@ export default class UserForm extends Component {
             </Collapsible>
 
             <Collapsible trigger="Headings">
-              <h3>
+              <h2>
                 Total Heading tags:{" "}
                 {_.get(
                   this.state.analysedData,
                   "data.numberOfHeadings",
                   "No data Found"
                 )}
-              </h3>
+              </h2>
               <p></p>
               <p>
                 {" "}
@@ -258,10 +258,10 @@ export default class UserForm extends Component {
               </p>
               <p>
                 {" "}
-                Number of h3 tags:{" "}
+                Number of h2 tags:{" "}
                 {_.get(
                   this.state.analysedData,
-                  "data.h3",
+                  "data.h2",
                   "No data Found"
                 )}{" "}
               </p>
@@ -294,11 +294,32 @@ export default class UserForm extends Component {
               </p>
             </Collapsible>
 
+            <Collapsible trigger="Pictures">
+              <h2>
+              Number of pictures :{" "}
+                {_.get(this.state.analysedData, "data.images", []).length}
+              </h2>
+              <h2>
+              Largest picture :{" "}
+              </h2>
+                {_.get(this.state.analysedData, "data.maxImage", "No data found")}
+              <p></p>
+              <hr/>
+              {_.get(this.state.analysedData, "data.images", false) &&
+                _.get(this.state.analysedData, "data.images", []).map(
+                  (value, id) => (
+                    <p key={`image_${id}`}>
+                      Picture {id + 1}: {value.image}{" "}
+                    </p>
+                  )
+                )}
+            </Collapsible>
+
             <Collapsible trigger="Internal links">
-              <h3>
+              <h2>
                 Total Internal links:{" "}
                 {_.get(this.state.analysedData, "data.internalinks", []).length}
-              </h3>
+              </h2>
               <p></p>
               {_.get(this.state.analysedData, "data.internalinks", false) &&
                 _.get(this.state.analysedData, "data.internalinks", []).map(
@@ -311,10 +332,10 @@ export default class UserForm extends Component {
             </Collapsible>
 
             <Collapsible trigger="External links">
-              <h3>
+              <h2>
                 Total External links:{" "}
                 {_.get(this.state.analysedData, "data.externalLinks", []).length}
-              </h3>
+              </h2>
               <p></p>
               {_.get(this.state.analysedData, "data.externalLinks", false) &&
                 _.get(this.state.analysedData, "data.externalLinks", []).map(
@@ -326,10 +347,10 @@ export default class UserForm extends Component {
                 )}
             </Collapsible>
             <Collapsible trigger="Loading time">
-              <h3>
+              <h2>
               Loading time of analysed webpage:{" "}
                 {_.get(this.state.analysedData, "data.responseTime", [])} ms
-              </h3>
+              </h2>
               {/* <p></p>
               {_.get(this.state.analysedData, "data.externalLinks", false) &&
                 _.get(this.state.analysedData, "data.externalLinks", []).map(
